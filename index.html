@@ -1,624 +1,146 @@
 <!doctype html>
 <html lang="id" class="h-full">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Pretest Seni Musik Semester II</title>
+
+  <!-- SDK -->
   <script src="/_sdk/data_sdk.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
   <style>
-        body {
-            box-sizing: border-box;
-        }
-        
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        
-        * {
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        .game-container {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100%;
-        }
-        
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-        
-        .note-icon {
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-        
-        .option-btn {
-            transition: all 0.3s ease;
-            transform: scale(1);
-        }
-        .tombol-mulai {
-          background: linear-gradient(135deg, #38bdf8, #2563eb);
-        }
-        .option-btn:hover {
-            transform: scale(1.05);
-        }
-        
-        .option-btn.correct {
-            background: #10b981 !important;
-            color: rgb(9, 19, 205) !important;
-            animation: pulse 0.5s;
-        }
-        
-        .option-btn.wrong {
-            background: #ef4444 !important;
-            color: white !important;
-            animation: shake 0.5s;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-        
-        .score-badge {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 30px;
-            font-weight: 600;
-        }
-        
-        .progress-bar {
-            height: 8px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #fbbf24, #f59e0b);
-            transition: width 0.5s ease;
-            border-radius: 10px;
-        }
-    </style>
-  <style>@view-transition { navigation: auto; }</style>
- </head>
- <body class="h-full">
-  <div id="app" class="game-container w-full h-full overflow-auto"></div>
-  <script>
-        const defaultConfig = {
-            judul_game: "<b>Pretest</b> <br> Seni Musik Semester II",
-            subtitle_game: "SMA Islam Al Azhar 16 Semarang",
-            instruksi_game: "<center>Jawablah dengan tepat!</center>",
-            tombol_mulai: "Mulai Gaskeun!",
-            background_color: "#667eea",
-            card_color: "#ffffff",
-            text_color: "#1f2937",
-            primary_button_color: "#8b5cf6",
-            secondary_button_color: "#ec4899"
-        };
+    * { font-family: 'Poppins', sans-serif; box-sizing: border-box; }
+    .game-container { background: linear-gradient(135deg, #667eea, #764ba2); min-height: 100%; }
+    .card { background: rgba(255,255,255,.95); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+    .note-icon { animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)} }
+    .option-btn { transition:.3s; }
+    .option-btn:hover { transform: scale(1.05); }
+    .option-btn.correct { background:#10b981!important;color:white!important }
+    .option-btn.wrong { background:#ef4444!important;color:white!important }
+    .score-badge { background: linear-gradient(135deg,#f093fb,#f5576c); color:white; padding:8px 20px; border-radius:30px; font-weight:600 }
+    .progress-bar { height:8px; background:rgba(255,255,255,.3); border-radius:10px; overflow:hidden }
+    .progress-fill { height:100%; background:linear-gradient(90deg,#fbbf24,#f59e0b); transition:.5s }
+    .tombol-mulai { background: linear-gradient(135deg,#38bdf8,#2563eb); }
+  </style>
+</head>
 
-        let currentScore = 0;
-        let currentQuestion = 0;
-        let playerName = '';
-        let playerClass = '';
-        let startTime = null;
+<body class="h-full">
+<div id="app" class="game-container w-full h-full"></div>
 
-        const questions = [
-            {
-                question: "Berapa jumlah nada dalam tangga nada mayor?",
-                options: ["5 nada", "6 nada", "7 nada", "8 nada"],
-                correct: 2,
-                explanation: "Tangga nada mayor terdiri dari 7 nada dengan pola interval tertentu."
-            },
-            {
-                question: "Pola interval tangga nada mayor adalah...",
-                options: ["1-1-½-1-1-1-½", "1-½-1-1-½-1-1", "½-1-1-½-1-1-1", "1-1-1-½-1-1-½"],
-                correct: 0,
-                explanation: "Pola interval mayor: 1-1-½-1-1-1-½ (whole-whole-half-whole-whole-whole-half)."
-            },
-            {
-                question: "Tangga nada C Mayor tidak memiliki tanda...",
-                options: ["Kres (#)", "Mol (♭)", "Keduanya benar", "Keduanya salah"],
-                correct: 2,
-                explanation: "C Mayor adalah tangga nada natural tanpa tanda kres atau mol."
-            },
-            {
-                question: "Tangga nada minor memiliki karakter yang...",
-                options: ["Ceria dan riang", "Sedih dan melankolis", "Netral", "Agresif"],
-                correct: 1,
-                explanation: "Tangga nada minor biasanya terdengar lebih sedih dan melankolis."
-            },
-            {
-                question: "Berapa jenis tangga nada minor?",
-                options: ["1 jenis", "2 jenis", "3 jenis", "4 jenis"],
-                correct: 2,
-                explanation: "Ada 3 jenis: minor natural, minor harmonis, dan minor melodis."
-            },
-            {
-                question: "Nada ke-3 dalam tangga nada C Mayor adalah...",
-                options: ["D", "E", "F", "G"],
-                correct: 1,
-                explanation: "Urutan C Mayor: C-D-E-F-G-A-B-C, jadi nada ke-3 adalah E."
-            },
-            {
-                question: "Perbedaan utama mayor dan minor terletak pada interval nada ke...",
-                options: ["Ke-1", "Ke-2", "Ke-3", "Ke-4"],
-                correct: 2,
-                explanation: "Perbedaan utama ada pada interval nada ke-3 (terts)."
-            },
-            {
-                question: "Tangga nada A Minor adalah relatif minor dari...",
-                options: ["C Mayor", "D Mayor", "G Mayor", "F Mayor"],
-                correct: 0,
-                explanation: "A Minor adalah relatif minor dari C Mayor (tidak ada tanda)."
-            },
-            {
-                question: "Tanda kres (#) berfungsi untuk...",
-                options: ["Menurunkan nada ½", "Menaikkan nada ½", "Menurunkan nada 1", "Menaikkan nada 1"],
-                correct: 1,
-                explanation: "Tanda kres (#) menaikkan nada setengah laras."
-            },
-            {
-                question: "Tangga nada G Mayor memiliki berapa tanda kres?",
-                options: ["1 kres", "2 kres", "3 kres", "Tidak ada"],
-                correct: 0,
-                explanation: "G Mayor memiliki 1 tanda kres pada nada F (F#)."
-            },
-            {
-                question: "Nada dominan dalam tangga nada C Mayor adalah...",
-                options: ["C", "E", "G", "A"],
-                correct: 2,
-                explanation: "Nada dominan adalah nada ke-5, dalam C Mayor adalah G."
-            },
-            {
-                question: "Tangga nada minor harmonis memiliki ciri...",
-                options: ["Nada ke-7 dinaikkan", "Nada ke-6 diturunkan", "Nada ke-3 dinaikkan", "Tidak ada perubahan"],
-                correct: 0,
-                explanation: "Minor harmonis: nada ke-7 dinaikkan setengah laras."
-            },
-            {
-                question: "Interval antara C-E dalam tangga nada mayor adalah...",
-                options: ["Sekon", "Terts mayor", "Kuart", "Kuint"],
-                correct: 1,
-                explanation: "C ke E berjarak 2 nada = interval terts mayor."
-            },
-            {
-                question: "Tanda mol (♭) pada F Mayor jatuh pada nada...",
-                options: ["E", "B", "A", "G"],
-                correct: 1,
-                explanation: "F Mayor memiliki 1 mol pada nada B (B♭)."
-            },
-            {
-                question: "Nada tonika dalam tangga nada D Mayor adalah...",
-                options: ["C", "D", "E", "F#"],
-                correct: 1,
-                explanation: "Nada tonika adalah nada dasar, untuk D Mayor adalah D."
-            }
-        ];
+<script>
+/* ================= CONFIG ================= */
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyU-8L2oS1ybXzXf6HmukHU9atg9TzjPebG8Y3fRdEBw_SGTEp3KcDe9ayCasUDb6uu/exec";
 
-        async function onConfigChange(config) {
-            const app = document.getElementById('app');
-            const bgColor = config.background_color || defaultConfig.background_color;
-            const cardColor = config.card_color || defaultConfig.card_color;
-            const textColor = config.text_color || defaultConfig.text_color;
-            const primaryColor = config.primary_button_color || defaultConfig.primary_button_color;
-            const secondaryColor = config.secondary_button_color || defaultConfig.secondary_button_color;
-            
-            app.style.background = `linear-gradient(135deg, ${bgColor} 0%, ${adjustColor(bgColor, -20)} 100%)`;
-            
-            const titleElements = app.querySelectorAll('.game-title');
-            titleElements.forEach(el => {
-                el.textContent = config.judul_game || defaultConfig.judul_game;
-                el.style.color = textColor;
-            });
-            
-            const subtitleElements = app.querySelectorAll('.game-subtitle');
-            subtitleElements.forEach(el => {
-                el.textContent = config.subtitle_game || defaultConfig.subtitle_game;
-                el.style.color = textColor;
-            });
-            
-            const instruksiElements = app.querySelectorAll('.game-instruksi');
-            instruksiElements.forEach(el => {
-                el.textContent = config.instruksi_game || defaultConfig.instruksi_game;
-                el.style.color = textColor;
-            });
-            
-            const tombolMulaiElements = app.querySelectorAll('.tombol-mulai');
-            tombolMulaiElements.forEach(el => {
-                el.textContent = config.tombol_mulai || defaultConfig.tombol_mulai;
-                el.style.backgroundColor = primaryColor;
-            });
-            
-            const cards = app.querySelectorAll('.card');
-            cards.forEach(card => {
-                card.style.backgroundColor = cardColor;
-            });
-            
-            const textElements = app.querySelectorAll('.text-gray-700, .text-gray-600, .text-gray-800');
-            textElements.forEach(el => {
-                el.style.color = textColor;
-            });
-        }
+const defaultConfig = {
+  judul_game: "<b>Pretest</b><br>Seni Musik Semester II",
+  subtitle_game: "SMA Islam Al Azhar 16 Semarang",
+  instruksi_game: "Jawablah dengan tepat!",
+  tombol_mulai: "Mulai Gaskeun!"
+};
 
-        function adjustColor(color, amount) {
-            const num = parseInt(color.replace("#", ""), 16);
-            const r = Math.max(0, Math.min(255, (num >> 16) + amount));
-            const g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amount));
-            const b = Math.max(0, Math.min(255, (num & 0x0000FF) + amount));
-            return "#" + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
-        }
+/* ================= STATE ================= */
+let currentScore = 0;
+let currentQuestion = 0;
+let playerName = "";
+let playerClass = "";
+let startTime = null;
 
-        function renderWelcomeScreen() {
-            const config = window.elementSdk?.config || defaultConfig;
-            return `
-                <div class="flex items-center justify-center min-h-full p-6">
-                    <div class="card p-8 max-w-md w-full">
-                        <div class="text-center mb-8">
-                            <div class="mb-4 note-icon flex justify-center">
-                                  <img 
-                                      src="https://raw.githubusercontent.com/pakfab/aaaassseeetttt/a88e291dd46aeff08e4332b6b1ce8dc4dc9acb0b/logosma.png" 
-                                      alt="Logo SMA"
-                                      class="w-24 h-auto"
-                                  >
-                              </div>
-                            <h1 class="game-title text-3xl font-bold mb-2">${config.judul_game || defaultConfig.judul_game}</h1>
-                            <p class="game-subtitle text-gray-600">${config.subtitle_game || defaultConfig.subtitle_game}</p>
-                        </div>
-                        
-                        <div class="mb-6 p-4 bg-purple-50 rounded-lg">
-                            <p class="game-instruksi text-sm text-gray-700">${config.instruksi_game || defaultConfig.instruksi_game}</p>
-                        </div>
-                        
-                        <div class="space-y-4 mb-6">
-                            <div>
-                                <label class="block text-sm font-semibold mb-2 text-gray-700">Nama Lengkap</label>
-                                <input type="text" id="playerName" placeholder="Masukkan nama Anda" 
-                                    class="w-full px-4 py-3 border-2 border-purple-200 rounded-lg focus:outline-none focus:border-purple-500 transition">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold mb-2 text-gray-700">Kelas</label>
-                                <input type="text" id="playerClass" placeholder="Masukan Kelas Anda" 
-                                    class="w-full px-4 py-3 border-2 border-purple-200 rounded-lg focus:outline-none focus:border-purple-500 transition">
-                            </div>
-                        </div>
-                        
-                        <button onclick="startGame()" class="tombol-mulai w-full py-4 text-white font-bold rounded-lg transition transform hover:scale-105">
-                            ${config.tombol_mulai || defaultConfig.tombol_mulai} 
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
+/* ================= QUESTIONS ================= */
+const questions = [
+  { q:"Berapa jumlah nada dalam tangga nada mayor?", o:["5","6","7","8"], c:2 },
+  { q:"Pola interval tangga nada mayor?", o:["1-1-½-1-1-1-½","1-½-1-1-½-1-1","½-1-1-½-1-1-1","1-1-1-½-1-1-½"], c:0 },
+  { q:"Tangga nada C Mayor tidak memiliki tanda?", o:["Kres","Mol","Keduanya","Salah"], c:2 }
+];
 
-        function renderQuestion() {
-            const config = window.elementSdk?.config || defaultConfig;
-            const q = questions[currentQuestion];
-            const progress = ((currentQuestion + 1) / questions.length) * 100;
-            
-            return `
-                <div class="flex items-center justify-center min-h-full p-6">
-                    <div class="card p-8 max-w-2xl w-full">
-                        <div class="flex justify-between items-center mb-6">
-                            <div class="score-badge">
-                                ⭐ Skor: ${currentScore}
-                            </div>
-                            <div class="text-gray-600 font-semibold">
-                                Soal ${currentQuestion + 1}/${questions.length}
-                            </div>
-                        </div>
-                        
-                        <div class="progress-bar mb-6">
-                            <div class="progress-fill" style="width: ${progress}%"></div>
-                        </div>
-                        
-                        <div class="mb-8">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-6">${q.question}</h2>
-                            <div class="grid gap-4">
-                                ${q.options.map((option, index) => `
-                                    <button onclick="selectAnswer(${index})" 
-                                        class="option-btn text-left px-6 py-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg font-semibold text-gray-700 border-2 border-purple-200">
-                                        ${String.fromCharCode(65 + index)}. ${option}
-                                    </button>
-                                `).join('')}
-                            </div>
-                        </div>
-                        
-                        <div id="feedback" class="hidden mb-4"></div>
-                        <button id="nextBtn" onclick="nextQuestion()" class="hidden w-full py-4 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-lg transition transform hover:scale-105">
-                            ${currentQuestion < questions.length - 1 ? 'Soal Berikutnya →' : 'Lihat Hasil 🎉'}
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
+/* ================= UI ================= */
+function renderWelcome() {
+  return `
+  <div class="flex items-center justify-center min-h-full p-6">
+    <div class="card p-8 max-w-md w-full text-center">
+      <img src="https://raw.githubusercontent.com/pakfab/aaaassseeetttt/a88e291dd46aeff08e4332b6b1ce8dc4dc9acb0b/logosma.png" class="mx-auto w-24 mb-4"/>
+      <h1 class="text-3xl font-bold mb-2">${defaultConfig.judul_game}</h1>
+      <p class="text-gray-600 mb-4">${defaultConfig.subtitle_game}</p>
+      <input id="playerName" placeholder="Nama" class="w-full p-3 border rounded mb-3">
+      <input id="playerClass" placeholder="Kelas" class="w-full p-3 border rounded mb-4">
+      <button onclick="startGame()" class="tombol-mulai w-full py-3 text-white font-bold rounded">${defaultConfig.tombol_mulai}</button>
+    </div>
+  </div>`;
+}
 
-        function renderResult() {
-            const config = window.elementSdk?.config || defaultConfig;
-            const percentage = (currentScore / questions.length * 100).toFixed(1);
-            let grade = '';
-            let emoji = '';
-            let message = '';
-            
-            if (percentage >= 90) {
-                grade = 'A';
-                emoji = '🏆';
-                message = 'Sempurna! Kamu Master Tangga Nada!';
-            } else if (percentage >= 80) {
-                grade = 'B';
-                emoji = '🎉';
-                message = 'Hebat! Pemahaman yang baik!';
-            } else if (percentage >= 70) {
-                grade = 'C';
-                emoji = '👍';
-                message = 'Bagus! Terus belajar ya!';
-            } else if (percentage >= 60) {
-                grade = 'D';
-                emoji = '📚';
-                message = 'Cukup baik, perlu lebih banyak latihan!';
-            } else {
-                grade = 'E';
-                emoji = '💪';
-                message = 'Jangan menyerah, terus belajar!';
-            }
-            
-            return `
-                <div class="flex items-center justify-center min-h-full p-6">
-                    <div class="card p-8 max-w-md w-full">
-                        <div class="text-center mb-8">
-                            <div class="text-6xl mb-4">${emoji}</div>
-                            <h1 class="text-3xl font-bold text-gray-800 mb-2">Selesai!</h1>
-                            <p class="text-gray-600">${message}</p>
-                        </div>
-                        
-                        <div class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-6 mb-6">
-                            <div class="text-center mb-4">
-                                <div class="text-5xl font-bold text-purple-600 mb-2">${currentScore}/${questions.length}</div>
-                                <div class="text-2xl font-bold text-gray-700">Nilai: ${percentage}%</div>
-                                <div class="text-3xl font-bold text-purple-600 mt-2">Grade: ${grade}</div>
-                            </div>
-                            
-                            <div class="border-t-2 border-purple-200 pt-4">
-                                <p class="text-sm text-gray-700"><strong>Nama:</strong> ${playerName}</p>
-                                <p class="text-sm text-gray-700"><strong>Kelas:</strong> ${playerClass}</p>
-                            </div>
-                        </div>
-                        
-                        <div id="saveStatus" class="mb-4 text-center text-sm"></div>
-                        
-                        <button onclick="restartGame()" class="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-lg transition transform hover:scale-105">
-                            Main Lagi 🔄
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
+function renderQuestion() {
+  const q = questions[currentQuestion];
+  return `
+  <div class="flex items-center justify-center min-h-full p-6">
+    <div class="card p-8 max-w-xl w-full">
+      <div class="score-badge mb-4">Skor: ${currentScore}</div>
+      <h2 class="text-xl font-bold mb-6">${q.q}</h2>
+      ${q.o.map((x,i)=>`
+        <button onclick="answer(${i})" class="option-btn w-full mb-3 p-4 border rounded">${x}</button>
+      `).join("")}
+    </div>
+  </div>`;
+}
 
-        function selectAnswer(index) {
-            const q = questions[currentQuestion];
-            const buttons = document.querySelectorAll('.option-btn');
-            const feedback = document.getElementById('feedback');
-            const nextBtn = document.getElementById('nextBtn');
-            
-            buttons.forEach(btn => btn.disabled = true);
-            
-            if (index === q.correct) {
-                buttons[index].classList.add('correct');
-                currentScore++;
-                feedback.innerHTML = `
-                    <div class="p-4 bg-green-50 border-2 border-green-500 rounded-lg">
-                        <p class="font-bold text-green-700 mb-2">✅ Benar!</p>
-                        <p class="text-sm text-gray-700">${q.explanation}</p>
-                    </div>
-                `;
-            } else {
-                buttons[index].classList.add('wrong');
-                buttons[q.correct].classList.add('correct');
-                feedback.innerHTML = `
-                    <div class="p-4 bg-red-50 border-2 border-red-500 rounded-lg">
-                        <p class="font-bold text-red-700 mb-2">❌ Kurang Tepat</p>
-                        <p class="text-sm text-gray-700">${q.explanation}</p>
-                    </div>
-                `;
-            }
-            
-            feedback.classList.remove('hidden');
-            nextBtn.classList.remove('hidden');
-        }
+function renderResult() {
+  return `
+  <div class="flex items-center justify-center min-h-full p-6">
+    <div class="card p-8 max-w-md w-full text-center">
+      <h1 class="text-3xl font-bold mb-2">Selesai</h1>
+      <p>Skor: ${currentScore}</p>
+      <div id="saveStatus" class="mt-4"></div>
+    </div>
+  </div>`;
+}
 
-        function nextQuestion() {
-            currentQuestion++;
-            if (currentQuestion < questions.length) {
-                render();
-            } else {
-                showResult();
-            }
-        }
-       async function showResult() {
-         const statusDiv = document.getElementById("status");
-       
-         const scoreData = {
-           nama: playerName,
-           kelas: playerClass,
-           nilai: currentScore,
-           waktu: `${minutes}m ${seconds}s`
-         };
-       
-         try {
-           await fetch("https://script.google.com/macros/s/PASTE_URL_GAS_KAMU/exec", {
-             method: "POST",
-             mode: "no-cors",
-             headers: {
-               "Content-Type": "application/json"
-             },
-             body: JSON.stringify(scoreData)
-           });
-       
-           statusDiv.innerHTML =
-             '<p class="text-green-600 font-semibold">✅ Hasil berhasil disimpan!</p>';
-       
-         } catch (err) {
-           console.error(err);
-           statusDiv.innerHTML =
-             '<p class="text-red-600 font-semibold">❌ Error koneksi</p>';
-         }
-       }
+/* ================= LOGIC ================= */
+function startGame() {
+  playerName = document.getElementById("playerName").value.trim();
+  playerClass = document.getElementById("playerClass").value.trim();
+  if (!playerName || !playerClass) return alert("Isi nama & kelas");
+  startTime = new Date();
+  render();
+}
 
-            const GAS_URL = "https://script.google.com/macros/s/AKfycbzzBOGs9R-5tZ5kfSptdInkkozwYRw_k1gRMAZNHeRGb9JvWn7puAva1Gxcrmkivroj/exec";
+function answer(i) {
+  if (i === questions[currentQuestion].c) currentScore++;
+  currentQuestion++;
+  currentQuestion < questions.length ? render() : finish();
+}
 
-              fetch(GAS_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: {
-                  "Content-Type": "application/json"
-                },
-                body: JSON.stringify(scoreData)
-              });
-              
-              statusDiv.innerHTML =
-                '<p class="text-green-600 font-semibold">✅ Hasil berhasil disimpan!</p>';
-              })
-              .catch(err => {
-                console.error(err);
-                statusDiv.innerHTML = '<p class="text-red-600 font-semibold">❌ Error koneksi</p>';
-              });
-        }
+function finish() {
+  document.getElementById("app").innerHTML = renderResult();
+  saveResult();
+}
 
-        function startGame() {
-            const nameInput = document.getElementById('playerName');
-            const classInput = document.getElementById('playerClass');
-            
-            if (!nameInput.value.trim() || !classInput.value.trim()) {
-                const tempDiv = document.createElement('div');
-                tempDiv.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-                tempDiv.textContent = '⚠️ Mohon isi nama dan kelas!';
-                document.body.appendChild(tempDiv);
-                setTimeout(() => tempDiv.remove(), 3000);
-                return;
-            }
-            
-            playerName = nameInput.value.trim();
-            playerClass = classInput.value.trim();
-            currentScore = 0;
-            currentQuestion = 0;
-            startTime = new Date();
-            render();
-        }
+function saveResult() {
+  const status = document.getElementById("saveStatus");
+  const form = new FormData();
+  form.append("nama", playerName);
+  form.append("kelas", playerClass);
+  form.append("nilai", currentScore);
+  form.append("waktu", Math.floor((Date.now()-startTime)/1000)+" detik");
 
-        function restartGame() {
-            currentScore = 0;
-            currentQuestion = 0;
-            playerName = '';
-            playerClass = '';
-            startTime = null;
-            render();
-        }
+  fetch(GAS_URL,{ method:"POST", body:form })
+    .then(()=> status.innerHTML="✅ Nilai tersimpan")
+    .catch(()=> status.innerHTML="❌ Gagal menyimpan");
+}
 
-        function render() {
-            const app = document.getElementById('app');
-            
-            if (!playerName) {
-                app.innerHTML = renderWelcomeScreen();
-            } else if (currentQuestion < questions.length) {
-                app.innerHTML = renderQuestion();
-            } else {
-                app.innerHTML = renderResult();
-            }
-        }
+function render() {
+  document.getElementById("app").innerHTML =
+    !playerName ? renderWelcome() :
+    currentQuestion < questions.length ? renderQuestion() :
+    renderResult();
+}
 
-        const dataHandler = {
-            onDataChanged(data) {
-                // UI sudah di-update di fungsi showResult
-            }
-        };
-
-        async function initApp() {
-            if (window.dataSdk) {
-                const initResult = await window.dataSdk.init(dataHandler);
-                if (!initResult.isOk) {
-                    console.error('Failed to initialize data SDK');
-                }
-            }
-            
-            if (window.elementSdk) {
-                window.elementSdk.init({
-                    defaultConfig,
-                    onConfigChange,
-                    mapToCapabilities: (config) => ({
-                        recolorables: [
-                            {
-                                get: () => config.background_color || defaultConfig.background_color,
-                                set: (value) => {
-                                    config.background_color = value;
-                                    window.elementSdk.setConfig({ background_color: value });
-                                }
-                            },
-                            {
-                                get: () => config.card_color || defaultConfig.card_color,
-                                set: (value) => {
-                                    config.card_color = value;
-                                    window.elementSdk.setConfig({ card_color: value });
-                                }
-                            },
-                            {
-                                get: () => config.text_color || defaultConfig.text_color,
-                                set: (value) => {
-                                    config.text_color = value;
-                                    window.elementSdk.setConfig({ text_color: value });
-                                }
-                            },
-                            {
-                                get: () => config.primary_button_color || defaultConfig.primary_button_color,
-                                set: (value) => {
-                                    config.primary_button_color = value;
-                                    window.elementSdk.setConfig({ primary_button_color: value });
-                                }
-                            },
-                            {
-                                get: () => config.secondary_button_color || defaultConfig.secondary_button_color,
-                                set: (value) => {
-                                    config.secondary_button_color = value;
-                                    window.elementSdk.setConfig({ secondary_button_color: value });
-                                }
-                            }
-                        ],
-                        borderables: [],
-                        fontEditable: undefined,
-                        fontSizeable: undefined
-                    }),
-                    mapToEditPanelValues: (config) => new Map([
-                        ["judul_game", config.judul_game || defaultConfig.judul_game],
-                        ["subtitle_game", config.subtitle_game || defaultConfig.subtitle_game],
-                        ["instruksi_game", config.instruksi_game || defaultConfig.instruksi_game],
-                        ["tombol_mulai", config.tombol_mulai || defaultConfig.tombol_mulai]
-                    ])
-                });
-            }
-            
-            render();
-        }
-
-        initApp();
-    </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b982dad5095e794',t:'MTc2NzY3MDY2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
-
+render();
+</script>
+</body>
 </html>
-
-
-
-
