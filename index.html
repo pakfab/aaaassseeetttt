@@ -3,7 +3,7 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pretest Seni Musik Semester II</title>
+  <title>PRETEST SENI MUSIK</title>
   <script src="/_sdk/data_sdk.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -38,21 +38,21 @@
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-20px); }
         }
-        
+        .tombol-mulai {
+            background: linear-gradient(135deg, #38bdf8, #2563eb);
+        }
         .option-btn {
             transition: all 0.3s ease;
             transform: scale(1);
         }
-        .tombol-mulai {
-          background: linear-gradient(135deg, #38bdf8, #2563eb);
-        }
+        
         .option-btn:hover {
             transform: scale(1.05);
         }
         
         .option-btn.correct {
             background: #10b981 !important;
-            color: rgb(9, 19, 205) !important;
+            color: white !important;
             animation: pulse 0.5s;
         }
         
@@ -101,9 +101,9 @@
   <div id="app" class="game-container w-full h-full overflow-auto"></div>
   <script>
         const defaultConfig = {
-            judul_game: "<b>Pretest</b> <br> Seni Musik Semester II",
-            subtitle_game: "SMA Islam Al Azhar 16 Semarang",
-            instruksi_game: "<center>Jawablah dengan tepat!</center>",
+            judul_game: "PRETEST SENI MUSIK ",
+            subtitle_game: "SMA ISLAM AL AZHAR 16 SEMARANG",
+            instruksi_game: "Jawab dengan tepat!",
             tombol_mulai: "Mulai Gaskeun!",
             background_color: "#667eea",
             card_color: "#ffffff",
@@ -271,12 +271,12 @@
                     <div class="card p-8 max-w-md w-full">
                         <div class="text-center mb-8">
                             <div class="mb-4 note-icon flex justify-center">
-                                  <img 
-                                      src="https://raw.githubusercontent.com/pakfab/aaaassseeetttt/a88e291dd46aeff08e4332b6b1ce8dc4dc9acb0b/logosma.png" 
-                                      alt="Logo SMA"
-                                      class="w-24 h-auto"
-                                  >
-                              </div>
+                                    <img 
+                                        src="https://raw.githubusercontent.com/pakfab/aaaassseeetttt/a88e291dd46aeff08e4332b6b1ce8dc4dc9acb0b/logosma.png" 
+                                        alt="Logo SMA"
+                                        class="w-24 h-auto"
+                                    >
+                                </div>
                             <h1 class="game-title text-3xl font-bold mb-2">${config.judul_game || defaultConfig.judul_game}</h1>
                             <p class="game-subtitle text-gray-600">${config.subtitle_game || defaultConfig.subtitle_game}</p>
                         </div>
@@ -293,13 +293,13 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold mb-2 text-gray-700">Kelas</label>
-                                <input type="text" id="playerClass" placeholder="Masukan Kelas Anda" 
+                                <input type="text" id="playerClass" placeholder="Masukan Kelas anda" 
                                     class="w-full px-4 py-3 border-2 border-purple-200 rounded-lg focus:outline-none focus:border-purple-500 transition">
                             </div>
                         </div>
                         
-                        <button onclick="startGame()" class="tombol-mulai w-full py-4 text-white font-bold rounded-lg transition transform hover:scale-105">
-                            ${config.tombol_mulai || defaultConfig.tombol_mulai} 
+                        <button onclick="startGame()" class="tombol-mulai option-btn w-full py-4 text-white font-bold rounded-lg">
+                            Mulai Gaskeun! 🚀
                         </button>
                     </div>
                 </div>
@@ -469,27 +469,13 @@
                 tanggal: new Date().toISOString()
             };
             
-            const GAS_URL = "https://script.google.com/macros/s/AKfycbyU-8L2oS1ybXzXf6HmukHU9atg9TzjPebG8Y3fRdEBw_SGTEp3KcDe9ayCasUDb6uu/exec";
-
-              fetch(GAS_URL, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json"
-                },
-                body: JSON.stringify(scoreData)
-              })
-              .then(res => res.json())
-              .then(data => {
-                if (data.status === "success") {
-                  statusDiv.innerHTML = '<p class="text-green-600 font-semibold">✅ Hasil berhasil disimpan!</p>';
-                } else {
-                  statusDiv.innerHTML = '<p class="text-red-600 font-semibold">⚠️ Gagal menyimpan</p>';
-                }
-              })
-              .catch(err => {
-                statusDiv.innerHTML = '<p class="text-red-600 font-semibold">❌ Error koneksi</p>';
-                console.error(err);
-              });
+            const result = await window.dataSdk.create(scoreData);
+            
+            if (result.isOk) {
+                statusDiv.innerHTML = '<p class="text-green-600 font-semibold">✅ Hasil berhasil disimpan!</p>';
+            } else {
+                statusDiv.innerHTML = '<p class="text-red-600 font-semibold">⚠️ Gagal menyimpan hasil</p>';
+            }
         }
 
         function startGame() {
